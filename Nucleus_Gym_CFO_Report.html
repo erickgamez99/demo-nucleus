@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nucleus Gym - CFO Report April 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  :root{
+    --accent:#c0392b;--accent2:#e74c3c;
+    --gold:#e67e22;--gold2:#f39c12;
+    --teal:#1a9e8f;--teal2:#16a085;
+    --purple:#5b4fcf;--purple2:#7c6fe0;
+    --sky:#2980b9;--sky2:#3498db;
+    --bg:#f4f2ee;--card:#ffffff;
+    --border:rgba(0,0,0,0.1);
+    --text:#2c3e50;--muted:#7f8c8d;
+    --heading:#1a1a2e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+  .wrap{max-width:1200px;margin:0 auto;padding:32px 24px 80px}
+
+  .toolbar{position:sticky;top:0;z-index:50;padding:12px 0;display:flex;gap:10px;justify-content:flex-end;
+    background:linear-gradient(180deg,rgba(244,242,238,.98) 60%,transparent)}
+  .btn{background:linear-gradient(135deg,var(--heading),#2c3e50);color:#fff;border:none;
+    padding:10px 22px;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px;
+    letter-spacing:.5px;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 15px rgba(0,0,0,.12)}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+
+  header{background:linear-gradient(135deg,#1a1a2e 0%,#2c3e50 50%,#34495e 100%);
+    border-radius:20px;padding:48px;margin-bottom:32px;position:relative;overflow:hidden;
+    box-shadow:0 10px 40px rgba(0,0,0,.1)}
+  header::before{content:"";position:absolute;top:-80px;right:-80px;width:300px;height:300px;
+    border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%)}
+  header .tag{display:inline-block;background:rgba(255,255,255,.15);color:#fff;padding:6px 16px;
+    border-radius:20px;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}
+  header h1{font-size:36px;font-weight:900;letter-spacing:-.5px;color:#fff}
+  header .sub{color:rgba(255,255,255,.7);font-size:15px;margin-top:6px;font-weight:500}
+
+  h2.section{font-size:20px;color:var(--heading);margin:44px 0 18px;padding-bottom:12px;
+    border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;font-weight:800}
+  h2.section .num{background:linear-gradient(135deg,var(--heading),#2c3e50);color:#fff;width:32px;height:32px;
+    border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;
+    transition:transform .2s,box-shadow .2s;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+  .card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.1)}
+
+  .scorecard{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .score{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;
+    text-align:center;position:relative;overflow:hidden;transition:transform .2s}
+  .score:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+  .score .glow{position:absolute;top:0;left:0;right:0;height:3px}
+  .score .slabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700}
+  .score .sval{font-size:26px;font-weight:900;margin:8px 0 4px;letter-spacing:-.5px}
+  .score .starget{font-size:12px;color:var(--muted)}
+  .score .status{margin-top:10px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+    padding:5px 12px;border-radius:8px;display:inline-block}
+  .status.ok{background:rgba(26,158,143,.1);color:var(--teal)}
+  .status.warn{background:rgba(230,126,34,.1);color:var(--gold)}
+  .status.bad{background:rgba(192,57,43,.1);color:var(--accent)}
+
+  .summary-box{background:linear-gradient(135deg,rgba(91,79,207,.04),rgba(192,57,43,.02));
+    border:1px solid rgba(91,79,207,.15);border-left:4px solid var(--purple);
+    padding:20px 24px;border-radius:14px;margin:0 0 28px}
+  .summary-box h3{font-size:16px;font-weight:800;color:var(--purple);margin-bottom:12px}
+  .summary-box ul{padding-left:20px}
+  .summary-box li{margin-bottom:6px;font-size:14px}
+  .summary-box li strong{color:var(--heading)}
+
+  .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;
+    box-shadow:0 2px 12px rgba(0,0,0,.04);transition:transform .2s}
+  .chart-wrap:hover{transform:translateY(-2px)}
+  .chart-wrap h3{margin:0 0 12px;font-size:14px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .chart-wrap .cnt{position:relative;height:280px}
+  .chart-full .cnt{height:340px}
+
+  table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+  thead th{background:var(--heading);color:rgba(255,255,255,.85);font-weight:700;font-size:11px;
+    text-transform:uppercase;letter-spacing:.8px;padding:12px 14px;text-align:left;border-bottom:2px solid var(--border)}
+  thead th:first-child{border-radius:10px 0 0 0}
+  thead th:last-child{border-radius:0 10px 0 0}
+  td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+  tr:hover td{background:rgba(0,0,0,.02)}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+  .pill{display:inline-block;padding:4px 12px;border-radius:8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+  .pill.red{background:rgba(192,57,43,.1);color:var(--accent)}
+  .pill.amber{background:rgba(230,126,34,.1);color:var(--gold)}
+  .pill.green{background:rgba(26,158,143,.1);color:var(--teal)}
+
+  .heatmap{border-collapse:separate;border-spacing:4px;width:100%}
+  .heatmap th{background:transparent;color:var(--muted);padding:8px 4px;text-align:center;
+    font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:none}
+  .heatmap td{text-align:center;padding:14px 6px;font-weight:800;font-size:13px;border-radius:10px;border:none;transition:transform .15s}
+  .heatmap td:hover{transform:scale(1.08)}
+  .heatmap .row-label{background:var(--heading);color:#fff;text-align:center;padding:12px 8px;font-weight:800;border-radius:10px}
+
+  .callout-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+  .callout{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+  .callout .big{font-size:36px;font-weight:900;letter-spacing:-1px}
+  .callout .desc{font-size:12px;color:var(--muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .callout.red .big{color:var(--accent)}
+  .callout.gold .big{color:var(--gold)}
+  .callout.teal .big{color:var(--teal)}
+  .callout.purple .big{color:var(--purple)}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  ul.clean{padding-left:20px}
+  ul.clean li{margin-bottom:8px;font-size:14px}
+
+  footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:12px;text-align:center}
+
+  @media print{
+    *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;
+      transition:none !important;transform:none !important}
+    body{background:#fff !important}
+    .toolbar{display:none !important}
+    .wrap{max-width:100%;padding:0 8px;margin:0}
+    header,.card,.chart-wrap,.score,.callout,.summary-box{box-shadow:none !important;border:1px solid #ccc !important}
+    .scorecard{grid-template-columns:repeat(5,1fr) !important;gap:8px !important}
+    .chart-row{grid-template-columns:1fr !important;gap:12px !important}
+    .two-col{grid-template-columns:1fr !important;gap:12px !important}
+    .callout-row{grid-template-columns:repeat(3,1fr) !important;gap:8px !important}
+    .chart-wrap .cnt{height:240px !important;overflow:visible !important}
+    .chart-full .cnt{height:280px !important}
+    canvas{max-width:100% !important}
+    .heatmap{font-size:10px !important;border-spacing:2px !important}
+    .heatmap td{padding:8px 3px !important;font-size:11px !important}
+    .heatmap .row-label{padding:8px 4px !important;font-size:10px !important}
+    table{font-size:11px !important;width:100% !important;table-layout:fixed !important}
+    td,th{padding:8px 10px !important;word-wrap:break-word !important;overflow-wrap:break-word !important}
+    .score{padding:12px 8px !important}
+    .score .sval{font-size:20px !important}
+    .score .slabel{font-size:9px !important}
+    @page{size:letter;margin:8mm}
+    .card,.chart-wrap,.score,.callout,.summary-box{break-inside:avoid;page-break-inside:avoid}
+    h2.section{page-break-after:avoid;break-after:avoid;margin-top:24px !important}
+    tr{break-inside:avoid;page-break-inside:avoid}
+    .chart-wrap{width:100% !important;margin-bottom:12px !important}
+    header{padding:24px !important;margin-bottom:16px !important}
+    header h1{font-size:28px !important}
+  }
+  @media (max-width:780px){
+    .scorecard{grid-template-columns:repeat(2,1fr)}
+    .chart-row,.two-col,.callout-row{grid-template-columns:1fr}
+    header h1{font-size:26px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="toolbar">
+    <button class="btn" onclick="window.print()">Export PDF / Print</button>
+  </div>
+
+  <header>
+    <div class="tag">CFO Financial Report</div>
+    <h1>Nucleus Gym</h1>
+    <div class="sub">April 2026 &middot; 8,200 sq ft &middot; 320 active members &middot; 6 coaches</div>
+  </header>
+
+  <!-- SUMMARY -->
+  <div class="summary-box">
+    <h3>Summary</h3>
+    <ul>
+      <li>Revenue is growing but we are <strong>8% below</strong> the annual target.</li>
+      <li>Only <strong>62% of class capacity</strong> is filled. That means 4 out of every 10 spots sit empty.</li>
+      <li>Member retention is at <strong>74%</strong>. The industry average is 80 to 85%. We lose too many people after month 3.</li>
+      <li><strong>Personal training</strong> and <strong>nutrition coaching</strong> are underutilized. Only 11% of members buy add-on services.</li>
+    </ul>
+  </div>
+
+  <!-- 1. SCORECARD -->
+  <h2 class="section"><span class="num">1</span>Business Overview</h2>
+  <div class="card">
+    <div class="scorecard">
+      <div class="score">
+        <div class="glow" style="background:linear-gradient(90deg,var(--gold),transparent)"></div>
+        <div class="slabel">Revenue (YTD)</div>
+        <div class="sval" style="color:var(--gold)">$412,800</div>
+        <div class="starget">Target: $448,000</div>
+        <div class="status warn">Slightly below</div>
+      </div>
+      <div class="score">
+        <div class="glow" style="background:linear-gradient(90deg,var(--accent),transparent)"></div>
+        <div class="slabel">Class Fill Rate</div>
+        <div class="sval" style="color:var(--accent)">62%</div>
+        <div class="starget">Target: 80%</div>
+        <div class="status bad">Needs work</div>
+      </div>
+      <div class="score">
+        <div class="glow" style="background:linear-gradient(90deg,var(--gold),transparent)"></div>
+        <div class="slabel">Member Retention</div>
+        <div class="sval" style="color:var(--gold)">74%</div>
+        <div class="starget">Target: 85%</div>
+        <div class="status warn">Slightly below</div>
+      </div>
+      <div class="score">
+        <div class="glow" style="background:linear-gradient(90deg,var(--accent),transparent)"></div>
+        <div class="slabel">Avg Revenue/Member</div>
+        <div class="sval" style="color:var(--accent)">$172</div>
+        <div class="starget">Target: $210</div>
+        <div class="status bad">Needs work</div>
+      </div>
+      <div class="score">
+        <div class="glow" style="background:linear-gradient(90deg,var(--gold),transparent)"></div>
+        <div class="slabel">Net Margin</div>
+        <div class="sval" style="color:var(--gold)">11.2%</div>
+        <div class="starget">Target: 18%</div>
+        <div class="status warn">Slightly below</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. SEASONALITY -->
+  <h2 class="section"><span class="num">2</span>When Does the Money Come In?</h2>
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <h3>Monthly Revenue</h3>
+      <div class="cnt"><canvas id="revChart"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Active Members by Month</h3>
+      <div class="cnt"><canvas id="memberChart"></canvas></div>
+    </div>
+  </div>
+  <div class="summary-box" style="margin-top:20px">
+    <h3>Seasonal Patterns</h3>
+    <ul>
+      <li><strong>January rush:</strong> New Year resolutions drive a 35% spike in sign-ups. Most cancel by March.</li>
+      <li><strong>Summer dip:</strong> June through August drops 15 to 20% as members go on vacation.</li>
+      <li><strong>Fall rebound:</strong> September and October pick back up as people return to routine.</li>
+      <li><strong>Holiday slow:</strong> Late November through December drops again. Gift card promos help offset.</li>
+    </ul>
+  </div>
+
+  <!-- 3. CLASS SCHEDULE -->
+  <h2 class="section"><span class="num">3</span>Which Classes and Times Are Busiest?</h2>
+  <div class="callout-row">
+    <div class="callout teal">
+      <div class="big">5:30 AM</div>
+      <div class="desc">Most popular class (92% full)</div>
+    </div>
+    <div class="callout red">
+      <div class="big">1:00 PM</div>
+      <div class="desc">Emptiest class (28% full)</div>
+    </div>
+    <div class="callout gold">
+      <div class="big">Saturday</div>
+      <div class="desc">Highest drop-in day</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--muted);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px">
+      Heatmap: Average Athletes per Class (last 90 days)
+    </h3>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:16px">
+      Each class holds 20 athletes. Numbers show average attendance.
+      <span style="color:var(--teal);font-weight:700">Green = full</span>,
+      <span style="color:var(--gold);font-weight:700">Yellow = half</span>,
+      <span style="color:var(--accent);font-weight:700">Red = empty</span>.
+    </p>
+    <table class="heatmap" id="heatmapTable">
+      <thead>
+        <tr><th></th><th>5:30a</th><th>6:30a</th><th>8:00a</th><th>9:30a</th><th>12:00p</th><th>1:00p</th><th>4:30p</th><th>5:30p</th><th>6:30p</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="chart-row" style="margin-top:18px">
+    <div class="chart-wrap">
+      <h3>Revenue by Day of Week</h3>
+      <div class="cnt"><canvas id="dayRevChart"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Class Fill Rate by Day</h3>
+      <div class="cnt"><canvas id="dayFillChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 4. REVENUE STREAMS -->
+  <h2 class="section"><span class="num">4</span>Where Does the Revenue Come From?</h2>
+  <div class="callout-row">
+    <div class="callout purple">
+      <div class="big">78%</div>
+      <div class="desc">Membership dues</div>
+    </div>
+    <div class="callout gold">
+      <div class="big">11%</div>
+      <div class="desc">Personal training</div>
+    </div>
+    <div class="callout teal">
+      <div class="big">11%</div>
+      <div class="desc">Retail, drop-ins, other</div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <h3>Revenue Breakdown</h3>
+      <div class="cnt"><canvas id="revPie"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Revenue per Member by Source</h3>
+      <div class="cnt"><canvas id="revPerMember"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <table>
+      <thead><tr><th>Revenue Stream</th><th>Annual</th><th>% of Revenue</th><th>Per Member/Mo</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Unlimited Memberships</td><td class="num">$645,600</td><td class="num">52.4%</td><td class="num">$175</td><td>Core revenue. 308 members at avg $175/mo.</td></tr>
+        <tr><td>Limited Memberships (3x/wk)</td><td class="num">$172,800</td><td class="num">14.0%</td><td class="num">$120</td><td>120 members. Good entry point but low margin.</td></tr>
+        <tr><td>Personal Training</td><td class="num">$136,800</td><td class="num">11.1%</td><td class="num">$85/session</td><td>Only 36 members (11%) buy PT. Big growth area.</td></tr>
+        <tr><td>Drop-Ins</td><td class="num">$62,400</td><td class="num">5.1%</td><td class="num">$25/visit</td><td>Travelers and try-before-you-buy. Saturdays peak.</td></tr>
+        <tr><td>Retail (apparel, supps)</td><td class="num">$48,000</td><td class="num">3.9%</td><td class="num">$12.50</td><td>Low margin. T-shirts and protein move fastest.</td></tr>
+        <tr><td>Nutrition Coaching</td><td class="num">$43,200</td><td class="num">3.5%</td><td class="num">$150/mo</td><td>Only 24 members enrolled. Very high margin.</td></tr>
+        <tr><td>Specialty Programs</td><td class="num">$39,600</td><td class="num">3.2%</td><td class="num">varies</td><td>Olympic lifting, gymnastics, endurance. 8-week cycles.</td></tr>
+        <tr><td>Competitions/Events</td><td class="num">$22,800</td><td class="num">1.9%</td><td class="num">$45/entry</td><td>4 in-house comps per year plus community events.</td></tr>
+        <tr><td><strong>Total</strong></td><td class="num"><strong>$1,171,200</strong></td><td class="num"><strong>100%</strong></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 5. RETENTION -->
+  <h2 class="section"><span class="num">5</span>Why Are Members Leaving?</h2>
+  <div class="callout-row">
+    <div class="callout red">
+      <div class="big">26%</div>
+      <div class="desc">Annual churn rate</div>
+    </div>
+    <div class="callout gold">
+      <div class="big">Month 3</div>
+      <div class="desc">Biggest drop-off point</div>
+    </div>
+    <div class="callout teal">
+      <div class="big">$187K</div>
+      <div class="desc">Lost revenue from churn</div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <h3>Retention Rate by Month</h3>
+      <div class="cnt"><canvas id="retentionChart"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Why Members Cancel</h3>
+      <div class="cnt"><canvas id="cancelPie"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <table>
+      <thead><tr><th>Reason for Leaving</th><th>% of Cancels</th><th>Lost Revenue</th><th>Can We Fix It?</th></tr></thead>
+      <tbody>
+        <tr><td>"Too expensive"</td><td class="num">28%</td><td class="num">$52,400</td><td><span class="pill amber">Partly</span></td></tr>
+        <tr><td>Injury or health issue</td><td class="num">18%</td><td class="num">$33,700</td><td><span class="pill amber">Partly</span></td></tr>
+        <tr><td>Moved away</td><td class="num">15%</td><td class="num">$28,100</td><td><span class="pill red">No</span></td></tr>
+        <tr><td>Schedule doesn't fit</td><td class="num">14%</td><td class="num">$26,200</td><td><span class="pill green">Yes</span></td></tr>
+        <tr><td>Didn't feel welcomed</td><td class="num">12%</td><td class="num">$22,400</td><td><span class="pill green">Yes</span></td></tr>
+        <tr><td>Switched to another gym</td><td class="num">8%</td><td class="num">$15,000</td><td><span class="pill amber">Partly</span></td></tr>
+        <tr><td>Other / unknown</td><td class="num">5%</td><td class="num">$9,400</td><td><span class="pill amber">Partly</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 6. EXPENSES -->
+  <h2 class="section"><span class="num">6</span>Where Does the Money Go?</h2>
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <h3>Expense Breakdown</h3>
+      <div class="cnt"><canvas id="expPie"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Each Expense as % of Revenue</h3>
+      <div class="cnt"><canvas id="expBar"></canvas></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <table>
+      <thead><tr><th>Expense</th><th>Annual</th><th>% of Revenue</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Coach Payroll</td><td class="num">$362,000</td><td class="num">30.9%</td><td>6 coaches. Salaries, taxes, benefits.</td></tr>
+        <tr><td>Rent</td><td class="num">$156,000</td><td class="num">13.3%</td><td>8,200 sq ft at $19/sq ft. Locked until 2028.</td></tr>
+        <tr><td>Equipment Lease/Maint</td><td class="num">$72,000</td><td class="num">6.1%</td><td>Rigs, rowers, bikes. Barbells replaced annually.</td></tr>
+        <tr><td>Insurance</td><td class="num">$48,000</td><td class="num">4.1%</td><td>General liability, professional, property.</td></tr>
+        <tr><td>Marketing</td><td class="num">$42,000</td><td class="num">3.6%</td><td>Social media, Google Ads, referral bonuses.</td></tr>
+        <tr><td>Software/Tech</td><td class="num">$28,800</td><td class="num">2.5%</td><td>Wodify, website, payment processing, music.</td></tr>
+        <tr><td>Utilities</td><td class="num">$24,000</td><td class="num">2.0%</td><td>Electric, water, internet. AC is the biggest.</td></tr>
+        <tr><td>Retail COGS</td><td class="num">$28,800</td><td class="num">2.5%</td><td>Cost of apparel and supplements sold.</td></tr>
+        <tr><td>Cleaning/Supplies</td><td class="num">$18,000</td><td class="num">1.5%</td><td>Cleaning crew, chalk, tape, sanitizer.</td></tr>
+        <tr><td>Admin/Other</td><td class="num">$15,600</td><td class="num">1.3%</td><td>Accounting, legal, misc.</td></tr>
+        <tr><td><strong>Total Expenses</strong></td><td class="num"><strong>$795,200</strong></td><td class="num"><strong>67.9%</strong></td><td></td></tr>
+        <tr style="background:rgba(26,158,143,.05)"><td><strong>Net Income</strong></td><td class="num"><strong>$131,200</strong></td><td class="num"><strong>11.2%</strong></td><td>Target: 18%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 7. TOP PROBLEMS -->
+  <h2 class="section"><span class="num">7</span>The 6 Biggest Problems</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Problem</th><th>What It Costs</th><th>Urgency</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>74% retention rate</strong><br><span style="color:var(--muted);font-size:12px">Industry is 80 to 85%. We lose most people by month 3.</span></td>
+          <td>$187K lost/year</td>
+          <td><span class="pill red">High</span></td>
+        </tr>
+        <tr>
+          <td><strong>62% class fill rate</strong><br><span style="color:var(--muted);font-size:12px">Target is 80%. Midday and early afternoon classes are nearly empty.</span></td>
+          <td>$96K in unused capacity</td>
+          <td><span class="pill red">High</span></td>
+        </tr>
+        <tr>
+          <td><strong>Only 11% buy add-on services</strong><br><span style="color:var(--muted);font-size:12px">PT and nutrition coaching have 60%+ margins but almost nobody buys them.</span></td>
+          <td>$120K+ we could earn</td>
+          <td><span class="pill red">High</span></td>
+        </tr>
+        <tr>
+          <td><strong>New member onboarding is weak</strong><br><span style="color:var(--muted);font-size:12px">No structured 30-day program. 40% of cancels happen in months 1 to 3.</span></td>
+          <td>$74K lost/year</td>
+          <td><span class="pill amber">Medium</span></td>
+        </tr>
+        <tr>
+          <td><strong>Retail margins are thin</strong><br><span style="color:var(--muted);font-size:12px">40% of retail is apparel at 30% margin. Supplements do better at 50%.</span></td>
+          <td>$12K margin opportunity</td>
+          <td><span class="pill amber">Medium</span></td>
+        </tr>
+        <tr>
+          <td><strong>Summer revenue drops 18%</strong><br><span style="color:var(--muted);font-size:12px">No freeze policy, no summer programming adjustments.</span></td>
+          <td>$38K seasonal loss</td>
+          <td><span class="pill amber">Medium</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 8. BENCHMARKS -->
+  <h2 class="section"><span class="num">8</span>How Do We Compare?</h2>
+  <div class="chart-wrap chart-full">
+    <h3>Nucleus Gym vs. Target vs. Industry Average</h3>
+    <div class="cnt"><canvas id="kpiChart"></canvas></div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <table>
+      <thead><tr><th>Metric</th><th>Us</th><th>Industry</th><th>2026 Target</th></tr></thead>
+      <tbody>
+        <tr><td>Class Fill Rate</td><td class="num">62%</td><td class="num">75 to 85%</td><td class="num">80%</td></tr>
+        <tr><td>Member Retention</td><td class="num">74%</td><td class="num">80 to 85%</td><td class="num">85%</td></tr>
+        <tr><td>Avg Revenue/Member</td><td class="num">$172</td><td class="num">$180 to $220</td><td class="num">$210</td></tr>
+        <tr><td>Add-On Attach Rate</td><td class="num">11%</td><td class="num">20 to 30%</td><td class="num">25%</td></tr>
+        <tr><td>Coach Cost %</td><td class="num">30.9%</td><td class="num">28 to 35%</td><td class="num">30%</td></tr>
+        <tr><td>Rent Cost %</td><td class="num">13.3%</td><td class="num">10 to 15%</td><td class="num">13%</td></tr>
+        <tr><td>Net Margin</td><td class="num">11.2%</td><td class="num">12 to 20%</td><td class="num">18%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 9. ACTION PLAN -->
+  <h2 class="section"><span class="num">9</span>Action Plan: Next 90 Days</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Action</th><th>Expected Result</th><th>Deadline</th><th>Owner</th></tr></thead>
+      <tbody>
+        <tr><td>Launch 30-day onboarding program for new members</td><td>Cut early churn by 30%</td><td>May 1</td><td>Head Coach</td></tr>
+        <tr><td>Add midday discount ($99/mo for 11am-2pm only)</td><td>Fill empty classes, +$48K</td><td>May 1</td><td>Owner</td></tr>
+        <tr><td>Free PT intro session for every member</td><td>Convert 15% to PT clients</td><td>May 15</td><td>PT Coach</td></tr>
+        <tr><td>Launch 8-week nutrition challenge with coaching</td><td>Add 40 nutrition clients</td><td>Jun 1</td><td>Nutrition Coach</td></tr>
+        <tr><td>Introduce summer freeze option ($25/mo hold)</td><td>Retain 60% of summer cancels</td><td>Jun 1</td><td>Owner</td></tr>
+        <tr><td>Referral bonus: bring a friend, get $50 credit</td><td>20 new members/quarter</td><td>May 15</td><td>Front Desk</td></tr>
+        <tr><td>Shift retail to 70% supplements, 30% apparel</td><td>Raise avg margin to 45%</td><td>Jun 15</td><td>Owner</td></tr>
+        <tr><td>Set aside 5% monthly for Q1 reserve</td><td>$25K buffer by December</td><td>May 1</td><td>Owner</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 10. SCENARIO -->
+  <h2 class="section"><span class="num">10</span>What Happens If We Do All of This?</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3 style="color:var(--heading);font-size:16px;font-weight:800;margin-bottom:14px">Changes We Make</h3>
+      <ul class="clean">
+        <li>Class fill rate: from 62% to 80%</li>
+        <li>Member retention: from 74% to 85%</li>
+        <li>Add-on attach rate: from 11% to 25%</li>
+        <li>Avg revenue/member: from $172 to $210</li>
+        <li>Summer cancels: cut by 60%</li>
+      </ul>
+      <div class="summary-box" style="margin-top:16px;margin-bottom:0">
+        <ul>
+          <li>Annual revenue goes from <strong>$1.17M to $1.46M</strong>.</li>
+          <li>Net income goes from <strong>$131K to $263K</strong>.</li>
+          <li>Net margin goes from <strong>11.2% to 18.0%</strong>.</li>
+          <li>No new space, no major equipment, no new hires needed.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Today vs. After Changes (Annual)</h3>
+      <div class="cnt"><canvas id="scenarioChart"></canvas></div>
+    </div>
+  </div>
+
+  <footer>Nucleus Gym &middot; CFO Report &middot; April 2026</footer>
+</div>
+
+<script>
+const accent="#c0392b",accent2="#e74c3c",gold="#e67e22",gold2="#f39c12",
+      teal="#1a9e8f",teal2="#16a085",purple="#5b4fcf",purple2="#7c6fe0",
+      sky="#2980b9",sky2="#3498db",heading="#1a1a2e",muted="#7f8c8d";
+
+Chart.defaults.font.family="'Inter',system-ui,sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.color="#7f8c8d";
+const fmt$=v=>"$"+v.toLocaleString();
+const gridC="rgba(0,0,0,0.06)";
+
+const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const revenue=[118400,108200,102600,97800,94200,82400,78600,84200,96800,104600,98400,112800];
+const members=[348,336,324,320,316,290,278,285,310,326,318,340];
+const retention=[78,76,72,74,73,68,66,70,76,78,75,80];
+
+// Heatmap: avg athletes per class (cap=20)
+const heatData={
+  "Mon":[18,16,10,8,7,5,14,18,16],
+  "Tue":[17,14,8,6,6,4,12,16,14],
+  "Wed":[18,16,10,8,7,6,14,19,16],
+  "Thu":[16,14,8,6,5,4,12,17,14],
+  "Fri":[15,12,9,7,6,5,10,14,12],
+  "Sat":[0,0,14,16,0,0,0,0,0]
+};
+const heatTimes=["5:30a","6:30a","8:00a","9:30a","12:00p","1:00p","4:30p","5:30p","6:30p"];
+(function(){
+  const tbody=document.querySelector("#heatmapTable tbody");
+  for(const[day,vals]of Object.entries(heatData)){
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="row-label">${day}</td>`;
+    vals.forEach(v=>{
+      const td=document.createElement("td");
+      if(v===0){td.textContent="--";td.style.background="#f0f0f0";td.style.color=muted;}
+      else{
+        const pct=v/20;
+        let bg;
+        if(pct>=.85) bg=teal;
+        else if(pct>=.7) bg="#2ecc71";
+        else if(pct>=.5) bg=gold2;
+        else if(pct>=.35) bg="#f5c96a";
+        else bg=accent2;
+        td.style.background=bg;td.style.color="#fff";
+        td.textContent=v;
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+})();
+
+// Revenue chart
+new Chart(document.getElementById("revChart"),{type:"bar",data:{labels:months,datasets:[{label:"Revenue",data:revenue,
+  backgroundColor:revenue.map(v=>v>=100000?teal:v>=90000?purple:accent),borderRadius:8,borderSkipped:false}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt$(c.parsed.y)}}},
+    scales:{y:{ticks:{callback:v=>"$"+(v/1000)+"k"},grid:{color:gridC}},x:{grid:{display:false}}}}});
+
+// Members chart
+(function(){
+  const ctx=document.getElementById("memberChart").getContext("2d");
+  const area=ctx.createLinearGradient(0,0,0,280);
+  area.addColorStop(0,"rgba(91,79,207,.25)");area.addColorStop(1,"rgba(91,79,207,.02)");
+  new Chart(ctx,{type:"line",data:{labels:months,datasets:[{label:"Members",data:members,
+    borderColor:purple,backgroundColor:area,fill:true,tension:.4,pointBackgroundColor:purple2,
+    pointRadius:4,pointHoverRadius:7,borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+" members"}}},
+      scales:{y:{grid:{color:gridC}},x:{grid:{display:false}}}}});
+})();
+
+// Day revenue
+new Chart(document.getElementById("dayRevChart"),{type:"bar",
+  data:{labels:["Mon","Tue","Wed","Thu","Fri","Sat"],
+    datasets:[{label:"Avg Daily Revenue",data:[4800,4200,4900,4100,3600,3200],
+      backgroundColor:[teal,purple,teal,purple,gold,accent],borderRadius:8,borderSkipped:false}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt$(c.parsed.y)}}},
+    scales:{y:{ticks:{callback:v=>"$"+v},grid:{color:gridC}},x:{grid:{display:false}}}}});
+
+// Day fill rate
+new Chart(document.getElementById("dayFillChart"),{type:"bar",
+  data:{labels:["Mon","Tue","Wed","Thu","Fri","Sat"],
+    datasets:[{label:"Fill %",data:[72,62,74,60,54,70],
+      backgroundColor:[teal,gold,teal,gold,accent,teal].map(c=>c),borderRadius:8,borderSkipped:false}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+"%"}}},
+    scales:{y:{ticks:{callback:v=>v+"%"},grid:{color:gridC},max:100},x:{grid:{display:false}}}}});
+
+// Revenue pie
+new Chart(document.getElementById("revPie"),{type:"doughnut",
+  data:{labels:["Unlimited","Limited","PT","Drop-Ins","Retail","Nutrition","Specialty","Events"],
+    datasets:[{data:[645600,172800,136800,62400,48000,43200,39600,22800],
+      backgroundColor:[purple,teal,gold,accent,sky,purple2,teal2,accent2],borderWidth:2,borderColor:"#fff"}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:"60%",
+    plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:11},padding:8}},
+      tooltip:{callbacks:{label:c=>c.label+": "+fmt$(c.parsed)}}}}});
+
+// Rev per member
+new Chart(document.getElementById("revPerMember"),{type:"bar",
+  data:{labels:["Membership","PT","Nutrition","Retail","Drop-In","Events"],
+    datasets:[{label:"$/Member/Mo",data:[155,27,11,12.50,16,6],backgroundColor:[purple,gold,teal,sky,accent,purple2],borderRadius:6}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>"$"+c.parsed.y}}},
+    scales:{y:{ticks:{callback:v=>"$"+v},grid:{color:gridC}},x:{grid:{display:false}}}}});
+
+// Retention
+(function(){
+  const ctx=document.getElementById("retentionChart").getContext("2d");
+  const area=ctx.createLinearGradient(0,0,0,280);
+  area.addColorStop(0,"rgba(230,126,34,.2)");area.addColorStop(1,"rgba(230,126,34,.02)");
+  new Chart(ctx,{type:"line",data:{labels:months,datasets:[
+    {label:"Retention %",data:retention,borderColor:gold,backgroundColor:area,fill:true,tension:.4,pointBackgroundColor:gold2,pointRadius:4,borderWidth:3},
+    {label:"Target",data:Array(12).fill(85),borderColor:teal,borderDash:[6,6],borderWidth:2,fill:false,pointRadius:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}},
+    scales:{y:{ticks:{callback:v=>v+"%"},grid:{color:gridC},min:60,max:95},x:{grid:{display:false}}}}});
+})();
+
+// Cancel reasons pie
+new Chart(document.getElementById("cancelPie"),{type:"doughnut",
+  data:{labels:["Too expensive","Injury","Moved","Schedule","Not welcomed","Switched","Other"],
+    datasets:[{data:[28,18,15,14,12,8,5],backgroundColor:[accent,gold,sky,purple,teal,purple2,muted],borderWidth:2,borderColor:"#fff"}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:"60%",
+    plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:11},padding:6}}}}});
+
+// Expense pie
+new Chart(document.getElementById("expPie"),{type:"doughnut",
+  data:{labels:["Coaches","Rent","Equipment","Insurance","Marketing","Software","Utilities","Retail COGS","Cleaning","Admin"],
+    datasets:[{data:[362000,156000,72000,48000,42000,28800,24000,28800,18000,15600],
+      backgroundColor:[purple,teal,gold,accent,sky,purple2,teal2,accent2,muted,"#bdc3c7"],borderWidth:2,borderColor:"#fff"}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:"58%",
+    plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:10},padding:6}},
+      tooltip:{callbacks:{label:c=>c.label+": "+fmt$(c.parsed)}}}}});
+
+// Expense bar
+new Chart(document.getElementById("expBar"),{type:"bar",
+  data:{labels:["Coaches","Rent","Equipment","Insurance","Marketing","Software","Utilities","COGS"],
+    datasets:[{label:"% of Revenue",data:[30.9,13.3,6.1,4.1,3.6,2.5,2.0,2.5],
+      backgroundColor:[purple,teal,gold,accent,sky,purple2,teal2,accent2],borderRadius:6}]},
+  options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.x+"%"}}},
+    scales:{x:{ticks:{callback:v=>v+"%"},grid:{color:gridC}},y:{grid:{display:false}}}}});
+
+// KPI comparison
+new Chart(document.getElementById("kpiChart"),{type:"bar",
+  data:{labels:["Fill Rate","Retention","Rev/Member","Add-On %","Coach Cost %","Net Margin"],
+    datasets:[
+      {label:"Us",data:[62,74,172,11,30.9,11.2],backgroundColor:accent,borderRadius:5},
+      {label:"Target",data:[80,85,210,25,30,18],backgroundColor:purple,borderRadius:5},
+      {label:"Industry",data:[80,82,195,25,32,15],backgroundColor:teal,borderRadius:5}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}},
+    scales:{y:{beginAtZero:true,grid:{color:gridC}},x:{grid:{display:false}}}}});
+
+// Scenario
+new Chart(document.getElementById("scenarioChart"),{type:"bar",
+  data:{labels:["Revenue","Gross Margin","Expenses","Net Income"],
+    datasets:[
+      {label:"Today",data:[1171200,920000,795200,131200],backgroundColor:purple,borderRadius:8},
+      {label:"With Changes",data:[1460000,1168000,897000,263000],backgroundColor:teal,borderRadius:8}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmt$(c.parsed.y)}}},
+    scales:{y:{ticks:{callback:v=>"$"+(v/1000)+"k"},grid:{color:gridC}},x:{grid:{display:false}}}}});
+</script>
+</body>
+</html>
