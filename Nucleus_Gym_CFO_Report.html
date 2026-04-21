@@ -20,8 +20,9 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
-  body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.6;min-height:100vh;-webkit-text-size-adjust:100%}
   .wrap{max-width:1200px;margin:0 auto;padding:32px 24px 80px}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 
   .toolbar{position:sticky;top:0;z-index:50;padding:12px 0;display:flex;gap:10px;justify-content:flex-end;
     background:linear-gradient(180deg,rgba(244,242,238,.98) 60%,transparent)}
@@ -144,10 +145,57 @@
     header{padding:24px !important;margin-bottom:16px !important}
     header h1{font-size:28px !important}
   }
-  @media (max-width:780px){
-    .scorecard{grid-template-columns:repeat(2,1fr)}
-    .chart-row,.two-col,.callout-row{grid-template-columns:1fr}
-    header h1{font-size:26px}
+  @media (max-width:900px){
+    .wrap{padding:20px 16px 60px}
+    header{padding:32px 24px;border-radius:16px;margin-bottom:24px}
+    header h1{font-size:28px}
+    header .sub{font-size:13px}
+    .chart-row,.two-col{grid-template-columns:1fr;gap:14px}
+    .chart-wrap .cnt{height:260px}
+    .chart-full .cnt{height:300px}
+    h2.section{font-size:18px;margin:32px 0 14px}
+  }
+  @media (max-width:680px){
+    body{font-size:14px}
+    .wrap{padding:16px 12px 48px}
+    .toolbar{padding:8px 0}
+    .btn{padding:9px 16px;font-size:12px}
+    header{padding:24px 20px;border-radius:14px;margin-bottom:20px}
+    header h1{font-size:24px}
+    header .tag{font-size:10px;padding:5px 12px;margin-bottom:12px}
+    .scorecard{grid-template-columns:repeat(2,1fr);gap:10px}
+    .score{padding:14px 10px}
+    .score .sval{font-size:20px}
+    .score .slabel{font-size:10px}
+    .score .starget{font-size:11px}
+    .score .status{font-size:9px;padding:4px 9px}
+    .callout-row{grid-template-columns:1fr;gap:10px}
+    .callout{padding:16px}
+    .callout .big{font-size:28px}
+    .card{padding:16px;border-radius:14px}
+    .chart-wrap{padding:14px}
+    .chart-wrap .cnt{height:240px}
+    .chart-full .cnt{height:260px}
+    .summary-box{padding:16px 18px}
+    .summary-box h3{font-size:15px}
+    .summary-box li,ul.clean li{font-size:13px}
+    h2.section{font-size:16px;margin:28px 0 12px;gap:10px}
+    h2.section .num{width:28px;height:28px;font-size:12px;border-radius:8px}
+    table{font-size:12px}
+    thead th{padding:10px 10px;font-size:10px}
+    td{padding:10px 10px}
+    .heatmap td{padding:10px 4px;font-size:12px}
+    .heatmap .row-label{padding:10px 6px;font-size:11px}
+    .heatmap th{font-size:10px;padding:6px 2px}
+  }
+  @media (max-width:420px){
+    .scorecard{grid-template-columns:1fr;gap:10px}
+    header h1{font-size:22px}
+    .callout .big{font-size:24px}
+    .chart-wrap .cnt{height:220px}
+  }
+  @media print{
+    .table-scroll{overflow:visible !important}
   }
 </style>
 </head>
@@ -266,12 +314,14 @@
       <span style="color:var(--gold);font-weight:700">Yellow = half</span>,
       <span style="color:var(--accent);font-weight:700">Red = empty</span>.
     </p>
-    <table class="heatmap" id="heatmapTable">
-      <thead>
-        <tr><th></th><th>5:30a</th><th>6:30a</th><th>8:00a</th><th>9:30a</th><th>12:00p</th><th>1:00p</th><th>4:30p</th><th>5:30p</th><th>6:30p</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="table-scroll">
+      <table class="heatmap" id="heatmapTable" style="min-width:560px">
+        <thead>
+          <tr><th></th><th>5:30a</th><th>6:30a</th><th>8:00a</th><th>9:30a</th><th>12:00p</th><th>1:00p</th><th>4:30p</th><th>5:30p</th><th>6:30p</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
 
   <div class="chart-row" style="margin-top:18px">
@@ -314,20 +364,22 @@
   </div>
 
   <div class="card" style="margin-top:18px">
-    <table>
-      <thead><tr><th>Revenue Stream</th><th>Annual</th><th>% of Revenue</th><th>Per Member/Mo</th><th>Note</th></tr></thead>
-      <tbody>
-        <tr><td>Unlimited Memberships</td><td class="num">$645,600</td><td class="num">52.4%</td><td class="num">$175</td><td>Core revenue. 308 members at avg $175/mo.</td></tr>
-        <tr><td>Limited Memberships (3x/wk)</td><td class="num">$172,800</td><td class="num">14.0%</td><td class="num">$120</td><td>120 members. Good entry point but low margin.</td></tr>
-        <tr><td>Personal Training</td><td class="num">$136,800</td><td class="num">11.1%</td><td class="num">$85/session</td><td>Only 36 members (11%) buy PT. Big growth area.</td></tr>
-        <tr><td>Drop-Ins</td><td class="num">$62,400</td><td class="num">5.1%</td><td class="num">$25/visit</td><td>Travelers and try-before-you-buy. Saturdays peak.</td></tr>
-        <tr><td>Retail (apparel, supps)</td><td class="num">$48,000</td><td class="num">3.9%</td><td class="num">$12.50</td><td>Low margin. T-shirts and protein move fastest.</td></tr>
-        <tr><td>Nutrition Coaching</td><td class="num">$43,200</td><td class="num">3.5%</td><td class="num">$150/mo</td><td>Only 24 members enrolled. Very high margin.</td></tr>
-        <tr><td>Specialty Programs</td><td class="num">$39,600</td><td class="num">3.2%</td><td class="num">varies</td><td>Olympic lifting, gymnastics, endurance. 8-week cycles.</td></tr>
-        <tr><td>Competitions/Events</td><td class="num">$22,800</td><td class="num">1.9%</td><td class="num">$45/entry</td><td>4 in-house comps per year plus community events.</td></tr>
-        <tr><td><strong>Total</strong></td><td class="num"><strong>$1,171,200</strong></td><td class="num"><strong>100%</strong></td><td></td><td></td></tr>
-      </tbody>
-    </table>
+    <div class="table-scroll">
+      <table style="min-width:640px">
+        <thead><tr><th>Revenue Stream</th><th>Annual</th><th>% of Revenue</th><th>Per Member/Mo</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>Unlimited Memberships</td><td class="num">$645,600</td><td class="num">52.4%</td><td class="num">$175</td><td>Core revenue. 308 members at avg $175/mo.</td></tr>
+          <tr><td>Limited Memberships (3x/wk)</td><td class="num">$172,800</td><td class="num">14.0%</td><td class="num">$120</td><td>120 members. Good entry point but low margin.</td></tr>
+          <tr><td>Personal Training</td><td class="num">$136,800</td><td class="num">11.1%</td><td class="num">$85/session</td><td>Only 36 members (11%) buy PT. Big growth area.</td></tr>
+          <tr><td>Drop-Ins</td><td class="num">$62,400</td><td class="num">5.1%</td><td class="num">$25/visit</td><td>Travelers and try-before-you-buy. Saturdays peak.</td></tr>
+          <tr><td>Retail (apparel, supps)</td><td class="num">$48,000</td><td class="num">3.9%</td><td class="num">$12.50</td><td>Low margin. T-shirts and protein move fastest.</td></tr>
+          <tr><td>Nutrition Coaching</td><td class="num">$43,200</td><td class="num">3.5%</td><td class="num">$150/mo</td><td>Only 24 members enrolled. Very high margin.</td></tr>
+          <tr><td>Specialty Programs</td><td class="num">$39,600</td><td class="num">3.2%</td><td class="num">varies</td><td>Olympic lifting, gymnastics, endurance. 8-week cycles.</td></tr>
+          <tr><td>Competitions/Events</td><td class="num">$22,800</td><td class="num">1.9%</td><td class="num">$45/entry</td><td>4 in-house comps per year plus community events.</td></tr>
+          <tr><td><strong>Total</strong></td><td class="num"><strong>$1,171,200</strong></td><td class="num"><strong>100%</strong></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- 5. RETENTION -->
@@ -359,18 +411,20 @@
   </div>
 
   <div class="card" style="margin-top:18px">
-    <table>
-      <thead><tr><th>Reason for Leaving</th><th>% of Cancels</th><th>Lost Revenue</th><th>Can We Fix It?</th></tr></thead>
-      <tbody>
-        <tr><td>"Too expensive"</td><td class="num">28%</td><td class="num">$52,400</td><td><span class="pill amber">Partly</span></td></tr>
-        <tr><td>Injury or health issue</td><td class="num">18%</td><td class="num">$33,700</td><td><span class="pill amber">Partly</span></td></tr>
-        <tr><td>Moved away</td><td class="num">15%</td><td class="num">$28,100</td><td><span class="pill red">No</span></td></tr>
-        <tr><td>Schedule doesn't fit</td><td class="num">14%</td><td class="num">$26,200</td><td><span class="pill green">Yes</span></td></tr>
-        <tr><td>Didn't feel welcomed</td><td class="num">12%</td><td class="num">$22,400</td><td><span class="pill green">Yes</span></td></tr>
-        <tr><td>Switched to another gym</td><td class="num">8%</td><td class="num">$15,000</td><td><span class="pill amber">Partly</span></td></tr>
-        <tr><td>Other / unknown</td><td class="num">5%</td><td class="num">$9,400</td><td><span class="pill amber">Partly</span></td></tr>
-      </tbody>
-    </table>
+    <div class="table-scroll">
+      <table style="min-width:520px">
+        <thead><tr><th>Reason for Leaving</th><th>% of Cancels</th><th>Lost Revenue</th><th>Can We Fix It?</th></tr></thead>
+        <tbody>
+          <tr><td>"Too expensive"</td><td class="num">28%</td><td class="num">$52,400</td><td><span class="pill amber">Partly</span></td></tr>
+          <tr><td>Injury or health issue</td><td class="num">18%</td><td class="num">$33,700</td><td><span class="pill amber">Partly</span></td></tr>
+          <tr><td>Moved away</td><td class="num">15%</td><td class="num">$28,100</td><td><span class="pill red">No</span></td></tr>
+          <tr><td>Schedule doesn't fit</td><td class="num">14%</td><td class="num">$26,200</td><td><span class="pill green">Yes</span></td></tr>
+          <tr><td>Didn't feel welcomed</td><td class="num">12%</td><td class="num">$22,400</td><td><span class="pill green">Yes</span></td></tr>
+          <tr><td>Switched to another gym</td><td class="num">8%</td><td class="num">$15,000</td><td><span class="pill amber">Partly</span></td></tr>
+          <tr><td>Other / unknown</td><td class="num">5%</td><td class="num">$9,400</td><td><span class="pill amber">Partly</span></td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- 6. EXPENSES -->
@@ -386,29 +440,32 @@
     </div>
   </div>
   <div class="card" style="margin-top:18px">
-    <table>
-      <thead><tr><th>Expense</th><th>Annual</th><th>% of Revenue</th><th>Note</th></tr></thead>
-      <tbody>
-        <tr><td>Coach Payroll</td><td class="num">$362,000</td><td class="num">30.9%</td><td>6 coaches. Salaries, taxes, benefits.</td></tr>
-        <tr><td>Rent</td><td class="num">$156,000</td><td class="num">13.3%</td><td>8,200 sq ft at $19/sq ft. Locked until 2028.</td></tr>
-        <tr><td>Equipment Lease/Maint</td><td class="num">$72,000</td><td class="num">6.1%</td><td>Rigs, rowers, bikes. Barbells replaced annually.</td></tr>
-        <tr><td>Insurance</td><td class="num">$48,000</td><td class="num">4.1%</td><td>General liability, professional, property.</td></tr>
-        <tr><td>Marketing</td><td class="num">$42,000</td><td class="num">3.6%</td><td>Social media, Google Ads, referral bonuses.</td></tr>
-        <tr><td>Software/Tech</td><td class="num">$28,800</td><td class="num">2.5%</td><td>Wodify, website, payment processing, music.</td></tr>
-        <tr><td>Utilities</td><td class="num">$24,000</td><td class="num">2.0%</td><td>Electric, water, internet. AC is the biggest.</td></tr>
-        <tr><td>Retail COGS</td><td class="num">$28,800</td><td class="num">2.5%</td><td>Cost of apparel and supplements sold.</td></tr>
-        <tr><td>Cleaning/Supplies</td><td class="num">$18,000</td><td class="num">1.5%</td><td>Cleaning crew, chalk, tape, sanitizer.</td></tr>
-        <tr><td>Admin/Other</td><td class="num">$15,600</td><td class="num">1.3%</td><td>Accounting, legal, misc.</td></tr>
-        <tr><td><strong>Total Expenses</strong></td><td class="num"><strong>$795,200</strong></td><td class="num"><strong>67.9%</strong></td><td></td></tr>
-        <tr style="background:rgba(26,158,143,.05)"><td><strong>Net Income</strong></td><td class="num"><strong>$131,200</strong></td><td class="num"><strong>11.2%</strong></td><td>Target: 18%</td></tr>
-      </tbody>
-    </table>
+    <div class="table-scroll">
+      <table style="min-width:580px">
+        <thead><tr><th>Expense</th><th>Annual</th><th>% of Revenue</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>Coach Payroll</td><td class="num">$362,000</td><td class="num">30.9%</td><td>6 coaches. Salaries, taxes, benefits.</td></tr>
+          <tr><td>Rent</td><td class="num">$156,000</td><td class="num">13.3%</td><td>8,200 sq ft at $19/sq ft. Locked until 2028.</td></tr>
+          <tr><td>Equipment Lease/Maint</td><td class="num">$72,000</td><td class="num">6.1%</td><td>Rigs, rowers, bikes. Barbells replaced annually.</td></tr>
+          <tr><td>Insurance</td><td class="num">$48,000</td><td class="num">4.1%</td><td>General liability, professional, property.</td></tr>
+          <tr><td>Marketing</td><td class="num">$42,000</td><td class="num">3.6%</td><td>Social media, Google Ads, referral bonuses.</td></tr>
+          <tr><td>Software/Tech</td><td class="num">$28,800</td><td class="num">2.5%</td><td>Wodify, website, payment processing, music.</td></tr>
+          <tr><td>Utilities</td><td class="num">$24,000</td><td class="num">2.0%</td><td>Electric, water, internet. AC is the biggest.</td></tr>
+          <tr><td>Retail COGS</td><td class="num">$28,800</td><td class="num">2.5%</td><td>Cost of apparel and supplements sold.</td></tr>
+          <tr><td>Cleaning/Supplies</td><td class="num">$18,000</td><td class="num">1.5%</td><td>Cleaning crew, chalk, tape, sanitizer.</td></tr>
+          <tr><td>Admin/Other</td><td class="num">$15,600</td><td class="num">1.3%</td><td>Accounting, legal, misc.</td></tr>
+          <tr><td><strong>Total Expenses</strong></td><td class="num"><strong>$795,200</strong></td><td class="num"><strong>67.9%</strong></td><td></td></tr>
+          <tr style="background:rgba(26,158,143,.05)"><td><strong>Net Income</strong></td><td class="num"><strong>$131,200</strong></td><td class="num"><strong>11.2%</strong></td><td>Target: 18%</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- 7. TOP PROBLEMS -->
   <h2 class="section"><span class="num">7</span>The 6 Biggest Problems</h2>
   <div class="card">
-    <table>
+    <div class="table-scroll">
+    <table style="min-width:560px">
       <thead><tr><th>Problem</th><th>What It Costs</th><th>Urgency</th></tr></thead>
       <tbody>
         <tr>
@@ -443,6 +500,7 @@
         </tr>
       </tbody>
     </table>
+    </div>
   </div>
 
   <!-- 8. BENCHMARKS -->
@@ -452,36 +510,40 @@
     <div class="cnt"><canvas id="kpiChart"></canvas></div>
   </div>
   <div class="card" style="margin-top:18px">
-    <table>
-      <thead><tr><th>Metric</th><th>Us</th><th>Industry</th><th>2026 Target</th></tr></thead>
-      <tbody>
-        <tr><td>Class Fill Rate</td><td class="num">62%</td><td class="num">75 to 85%</td><td class="num">80%</td></tr>
-        <tr><td>Member Retention</td><td class="num">74%</td><td class="num">80 to 85%</td><td class="num">85%</td></tr>
-        <tr><td>Avg Revenue/Member</td><td class="num">$172</td><td class="num">$180 to $220</td><td class="num">$210</td></tr>
-        <tr><td>Add-On Attach Rate</td><td class="num">11%</td><td class="num">20 to 30%</td><td class="num">25%</td></tr>
-        <tr><td>Coach Cost %</td><td class="num">30.9%</td><td class="num">28 to 35%</td><td class="num">30%</td></tr>
-        <tr><td>Rent Cost %</td><td class="num">13.3%</td><td class="num">10 to 15%</td><td class="num">13%</td></tr>
-        <tr><td>Net Margin</td><td class="num">11.2%</td><td class="num">12 to 20%</td><td class="num">18%</td></tr>
-      </tbody>
-    </table>
+    <div class="table-scroll">
+      <table style="min-width:480px">
+        <thead><tr><th>Metric</th><th>Us</th><th>Industry</th><th>2026 Target</th></tr></thead>
+        <tbody>
+          <tr><td>Class Fill Rate</td><td class="num">62%</td><td class="num">75 to 85%</td><td class="num">80%</td></tr>
+          <tr><td>Member Retention</td><td class="num">74%</td><td class="num">80 to 85%</td><td class="num">85%</td></tr>
+          <tr><td>Avg Revenue/Member</td><td class="num">$172</td><td class="num">$180 to $220</td><td class="num">$210</td></tr>
+          <tr><td>Add-On Attach Rate</td><td class="num">11%</td><td class="num">20 to 30%</td><td class="num">25%</td></tr>
+          <tr><td>Coach Cost %</td><td class="num">30.9%</td><td class="num">28 to 35%</td><td class="num">30%</td></tr>
+          <tr><td>Rent Cost %</td><td class="num">13.3%</td><td class="num">10 to 15%</td><td class="num">13%</td></tr>
+          <tr><td>Net Margin</td><td class="num">11.2%</td><td class="num">12 to 20%</td><td class="num">18%</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- 9. ACTION PLAN -->
   <h2 class="section"><span class="num">9</span>Action Plan: Next 90 Days</h2>
   <div class="card">
-    <table>
-      <thead><tr><th>Action</th><th>Expected Result</th><th>Deadline</th><th>Owner</th></tr></thead>
-      <tbody>
-        <tr><td>Launch 30-day onboarding program for new members</td><td>Cut early churn by 30%</td><td>May 1</td><td>Head Coach</td></tr>
-        <tr><td>Add midday discount ($99/mo for 11am-2pm only)</td><td>Fill empty classes, +$48K</td><td>May 1</td><td>Owner</td></tr>
-        <tr><td>Free PT intro session for every member</td><td>Convert 15% to PT clients</td><td>May 15</td><td>PT Coach</td></tr>
-        <tr><td>Launch 8-week nutrition challenge with coaching</td><td>Add 40 nutrition clients</td><td>Jun 1</td><td>Nutrition Coach</td></tr>
-        <tr><td>Introduce summer freeze option ($25/mo hold)</td><td>Retain 60% of summer cancels</td><td>Jun 1</td><td>Owner</td></tr>
-        <tr><td>Referral bonus: bring a friend, get $50 credit</td><td>20 new members/quarter</td><td>May 15</td><td>Front Desk</td></tr>
-        <tr><td>Shift retail to 70% supplements, 30% apparel</td><td>Raise avg margin to 45%</td><td>Jun 15</td><td>Owner</td></tr>
-        <tr><td>Set aside 5% monthly for Q1 reserve</td><td>$25K buffer by December</td><td>May 1</td><td>Owner</td></tr>
-      </tbody>
-    </table>
+    <div class="table-scroll">
+      <table style="min-width:620px">
+        <thead><tr><th>Action</th><th>Expected Result</th><th>Deadline</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr><td>Launch 30-day onboarding program for new members</td><td>Cut early churn by 30%</td><td>May 1</td><td>Head Coach</td></tr>
+          <tr><td>Add midday discount ($99/mo for 11am-2pm only)</td><td>Fill empty classes, +$48K</td><td>May 1</td><td>Owner</td></tr>
+          <tr><td>Free PT intro session for every member</td><td>Convert 15% to PT clients</td><td>May 15</td><td>PT Coach</td></tr>
+          <tr><td>Launch 8-week nutrition challenge with coaching</td><td>Add 40 nutrition clients</td><td>Jun 1</td><td>Nutrition Coach</td></tr>
+          <tr><td>Introduce summer freeze option ($25/mo hold)</td><td>Retain 60% of summer cancels</td><td>Jun 1</td><td>Owner</td></tr>
+          <tr><td>Referral bonus: bring a friend, get $50 credit</td><td>20 new members/quarter</td><td>May 15</td><td>Front Desk</td></tr>
+          <tr><td>Shift retail to 70% supplements, 30% apparel</td><td>Raise avg margin to 45%</td><td>Jun 15</td><td>Owner</td></tr>
+          <tr><td>Set aside 5% monthly for Q1 reserve</td><td>$25K buffer by December</td><td>May 1</td><td>Owner</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- 10. SCENARIO -->
@@ -522,8 +584,12 @@ const accent="#c0392b",accent2="#e74c3c",gold="#e67e22",gold2="#f39c12",
 Chart.defaults.font.family="'Inter',system-ui,sans-serif";
 Chart.defaults.font.size=11;
 Chart.defaults.color="#7f8c8d";
+Chart.defaults.responsive=true;
+Chart.defaults.maintainAspectRatio=false;
 const fmt$=v=>"$"+v.toLocaleString();
 const gridC="rgba(0,0,0,0.06)";
+const isNarrow=()=>window.matchMedia("(max-width:680px)").matches;
+const sideLegend=()=>isNarrow()?"bottom":"right";
 
 const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const revenue=[118400,108200,102600,97800,94200,82400,78600,84200,96800,104600,98400,112800];
@@ -605,7 +671,7 @@ new Chart(document.getElementById("revPie"),{type:"doughnut",
     datasets:[{data:[645600,172800,136800,62400,48000,43200,39600,22800],
       backgroundColor:[purple,teal,gold,accent,sky,purple2,teal2,accent2],borderWidth:2,borderColor:"#fff"}]},
   options:{responsive:true,maintainAspectRatio:false,cutout:"60%",
-    plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:11},padding:8}},
+    plugins:{legend:{position:sideLegend(),labels:{boxWidth:12,font:{size:11},padding:8}},
       tooltip:{callbacks:{label:c=>c.label+": "+fmt$(c.parsed)}}}}});
 
 // Rev per member
@@ -632,7 +698,7 @@ new Chart(document.getElementById("cancelPie"),{type:"doughnut",
   data:{labels:["Too expensive","Injury","Moved","Schedule","Not welcomed","Switched","Other"],
     datasets:[{data:[28,18,15,14,12,8,5],backgroundColor:[accent,gold,sky,purple,teal,purple2,muted],borderWidth:2,borderColor:"#fff"}]},
   options:{responsive:true,maintainAspectRatio:false,cutout:"60%",
-    plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:11},padding:6}}}}});
+    plugins:{legend:{position:sideLegend(),labels:{boxWidth:12,font:{size:11},padding:6}}}}});
 
 // Expense pie
 new Chart(document.getElementById("expPie"),{type:"doughnut",
@@ -640,7 +706,7 @@ new Chart(document.getElementById("expPie"),{type:"doughnut",
     datasets:[{data:[362000,156000,72000,48000,42000,28800,24000,28800,18000,15600],
       backgroundColor:[purple,teal,gold,accent,sky,purple2,teal2,accent2,muted,"#bdc3c7"],borderWidth:2,borderColor:"#fff"}]},
   options:{responsive:true,maintainAspectRatio:false,cutout:"58%",
-    plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:10},padding:6}},
+    plugins:{legend:{position:sideLegend(),labels:{boxWidth:12,font:{size:10},padding:6}},
       tooltip:{callbacks:{label:c=>c.label+": "+fmt$(c.parsed)}}}}});
 
 // Expense bar
@@ -671,6 +737,23 @@ new Chart(document.getElementById("scenarioChart"),{type:"bar",
     ]},
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmt$(c.parsed.y)}}},
     scales:{y:{ticks:{callback:v=>"$"+(v/1000)+"k"},grid:{color:gridC}},x:{grid:{display:false}}}}});
+
+// Keep doughnut legend placement in sync with viewport width
+let _lastNarrow=isNarrow();
+let _resizeT;
+window.addEventListener("resize",()=>{
+  clearTimeout(_resizeT);
+  _resizeT=setTimeout(()=>{
+    const narrow=isNarrow();
+    if(narrow===_lastNarrow) return;
+    _lastNarrow=narrow;
+    const pos=narrow?"bottom":"right";
+    ["revPie","cancelPie","expPie"].forEach(id=>{
+      const c=Chart.getChart(id);
+      if(c){c.options.plugins.legend.position=pos;c.update();}
+    });
+  },150);
+});
 </script>
 </body>
 </html>
